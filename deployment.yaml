@@ -1,0 +1,46 @@
+apiVersion : apps/v1
+kind : Deployment
+metadata :
+  name : mondgodb-deployment
+  labels :
+    app : mondgodb
+spec :
+  replicas : 1
+  selector :
+    matchLabels:
+      app : mondgodb
+  template:
+    metadata:
+      labels:
+        app : mondgodb
+    spec:
+     containers:
+     - name : mondgodb
+       image : mongo:latest
+       ports:
+       - containerPort : 27017
+       env:
+       - name : MONGO_INITDB_ROOT_USERNAME
+         valueFrom : 
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+
+       - name : MONGO_INITDB_ROOT_PASSWORD
+         valueFrom :
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_PASSWORD 
+---
+apiVersion : v1
+kind : Service
+metadata:
+  name: mongodb-service
+spec: 
+  selector:
+    app : mondgodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP               
