@@ -31,7 +31,21 @@ spec:
               name: mongodb-secret
               key: MONGO_INITDB_ROOT_PASSWORD
         - name: ME_CONFIG_MONGODB_SERVER
-          configMapKeyRef:
-            name: mongodb-config
-            key: database_url
+          valueFrom:
+            configMapKeyRef:
+               name: mongodb-config
+               key: database_url
 ---
+apiVersion : v1
+kind : Service
+metadata:
+  name: mongo-express-service
+spec: 
+  selector:
+    apps : mongo-express
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 8081  
+      targetPort: 8081
+      nodePort: 30000
